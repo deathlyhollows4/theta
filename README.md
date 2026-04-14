@@ -29,6 +29,7 @@ Production-grade MVP scaffold for a coding practice platform with AI-driven DSA 
 cd server
 npm install
 cp .env.example .env
+# Optional: set REQUIRE_DB=true if you want startup to fail when DB is unreachable.
 npm run seed:problems  # seeds ~360 problems
 npm run dev
 ```
@@ -41,6 +42,8 @@ cp .env.example .env
 npm run seed:problems
 npm run dev
 ```
+
+> If MongoDB is not reachable and `REQUIRE_DB=false` (default), the server still boots in degraded mode and DB-backed routes return HTTP 503 until MongoDB is configured.
 
 
 ## Run frontend
@@ -125,6 +128,7 @@ It means MongoDB is not running in your Codespace container. Fix by:
    ```
 
 Optional: run local MongoDB inside container only if you explicitly install/start it.
+If you need strict behavior (hard-fail at boot when DB is down), set `REQUIRE_DB=true`.
 
 If you see:
 `querySrv EBADNAME _mongodb._tcp.<cluster>`
@@ -138,5 +142,4 @@ Your host is still the sample Atlas hostname. Replace it with your **actual** cl
 Also verify in Atlas:
 - Database user exists
 - Network Access allows your current IP (or `0.0.0.0/0` temporarily for dev)
-
 

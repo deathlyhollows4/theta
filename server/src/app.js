@@ -12,6 +12,7 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import roadmapRoutes from './routes/roadmap.routes.js';
 import profileRoutes from './routes/profile.routes.js';
 import { rateLimit } from './middlewares/rate-limit.middleware.js';
+import { requireDbConnection } from './middlewares/db-ready.middleware.js';
 import { errorHandler, notFound } from './middlewares/error.middleware.js';
 
 const app = express();
@@ -35,12 +36,17 @@ app.get('/', (_req, res) => {
 });
 
 app.use('/api/health', healthRoutes);
-app.use('/api/auth', rateLimit({ windowMs: 60_000, maxRequests: 40, keyPrefix: 'auth' }), authRoutes);
-app.use('/api/problems', problemRoutes);
-app.use('/api/submit', rateLimit({ windowMs: 60_000, maxRequests: 100, keyPrefix: 'submit' }), submissionRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/roadmap', roadmapRoutes);
-app.use('/api/profile', profileRoutes);
+app.use('/api/auth', requireDbConnection, rateLimit({ windowMs: 60_000, maxRequests: 40, keyPrefix: 'auth' }), authRoutes);
+app.use('/api/problems', requireDbConnection, problemRoutes);
+app.use(
+  '/api/submit',
+  requireDbConnection,
+  rateLimit({ windowMs: 60_000, maxRequests: 100, keyPrefix: 'submit' }),
+  submissionRoutes
+);
+app.use('/api/dashboard', requireDbConnection, dashboardRoutes);
+app.use('/api/roadmap', requireDbConnection, roadmapRoutes);
+app.use('/api/profile', requireDbConnection, profileRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
