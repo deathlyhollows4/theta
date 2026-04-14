@@ -6,6 +6,7 @@ import ProblemPage from './pages/ProblemPage.jsx';
 import ProblemsListPage from './pages/ProblemsListPage.jsx';
 import Navbar from './components/Navbar.jsx';
 import PublicProfilePage from './pages/PublicProfilePage.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 const App = () => {
   return (
@@ -14,9 +15,30 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/problems" element={<ProblemsListPage />} />
-        <Route path="/problems/:slug" element={<ProblemPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/problems"
+          element={
+            <ProtectedRoute>
+              <ProblemsListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/problems/:slug"
+          element={
+            <ProtectedRoute>
+              <ProblemPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/u/:username" element={<PublicProfilePage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
