@@ -19,6 +19,7 @@ Production-grade MVP scaffold for a coding practice platform with AI-driven DSA 
 - Step 14: Production hardening with rate limiting and frontend error boundary.
 - Step 15: Health diagnostics endpoint + frontend retry/skeleton states.
 - Step 16: Auth/session UX hardening (auth context, protected routes, logout).
+- Step 17: UI consistency pass (empty states, retry flows, loading states).
 
 ## Run backend
 ```bash
