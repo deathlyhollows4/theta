@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { api } from '../services/api.js';
@@ -28,30 +28,30 @@ const ProblemPage = () => {
     return `${result.passedCount}/${result.totalCount} tests passed`;
   }, [result]);
 
-  const loadProblem = async () => {
+  const loadProblem = useCallback(async () => {
     const response = await api.get(`/problems/${slug}`);
     const p = response.data.data;
     setProblem(p);
-    setCode(p.starterCode.javascript);
-  };
+    setCode((prev) => (prev ? prev : p.starterCode.javascript));
+  }, [slug]);
 
-  const loadHistory = async () => {
+  const loadHistory = useCallback(async () => {
     const response = await api.get('/submit/history', { params: { problemSlug: slug, limit: 8 } });
     setHistory(response.data.data);
-  };
+  }, [slug]);
 
-  const loadAll = () => {
+  const loadAll = useCallback(() => {
     setError('');
     Promise.all([loadProblem(), loadHistory()]).catch((err) => {
       setError(err?.message || 'Failed to load problem.');
     });
-  };
+  }, [loadProblem, loadHistory]);
 
   useEffect(() => {
     loadAll();
-  }, [slug]);
+  }, [loadAll]);
 
-  const runCode = async () => {
+  const runCode = useCallback(async () => {
     setError('');
     setIsRunning(true);
     try {
@@ -63,9 +63,9 @@ const ProblemPage = () => {
     } finally {
       setIsRunning(false);
     }
-  };
+  }, [slug, code, language]);
 
-  const runCustom = async () => {
+  const runCustom = useCallback(async () => {
     setError('');
     setIsRunning(true);
     try {
@@ -77,9 +77,9 @@ const ProblemPage = () => {
     } finally {
       setIsRunning(false);
     }
-  };
+  }, [code, customInput, language]);
 
-  const submitCode = async () => {
+  const submitCode = useCallback(async () => {
     setError('');
     setIsRunning(true);
     try {
@@ -92,7 +92,7 @@ const ProblemPage = () => {
     } finally {
       setIsRunning(false);
     }
-  };
+  }, [slug, code, language, loadHistory]);
 
   useEffect(() => {
     const keyHandler = (event) => {
@@ -108,7 +108,7 @@ const ProblemPage = () => {
 
     window.addEventListener('keydown', keyHandler);
     return () => window.removeEventListener('keydown', keyHandler);
-  });
+  }, [runCode, submitCode]);
 
   if (!problem) {
     return (

@@ -22,6 +22,7 @@ Production-grade MVP scaffold for a coding practice platform with AI-driven DSA 
 - Step 17: UI consistency pass (empty states, retry flows, loading states).
 - Step 18: Notification + accessibility polish (toast feedback, ARIA labels).
 - Step 19: Release readiness docs cleanup + dynamic service version in health readiness.
+- Step 20: Final validation pass (fixed keyboard listener stability and callback consistency).
 
 ## Run backend
 ```bash
