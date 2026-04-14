@@ -86,3 +86,16 @@ VITE_API_BASE_URL=http://localhost:5000/api
 - [ ] Verify register/login/logout and protected routes.
 - [ ] Verify run, run-custom, submit, dashboard, roadmap, public profile.
 - [ ] Add production MongoDB URI and OpenAI key in deployment env.
+
+## Known limitations (current MVP)
+- JavaScript is the only executable language right now (Python/C++ UI placeholders are non-functional).
+- In-memory rate limiting is single-instance only (not distributed).
+- Execution sandbox uses Node `vm`; for strict production isolation, move to containerized runners.
+- AI output quality depends on OpenAI availability and prompt constraints.
+
+## Suggested next priorities
+1. Add robust automated test suites (unit + integration + E2E).
+2. Replace in-memory rate limiting with Redis-backed limiter.
+3. Move code execution to isolated worker/container service.
+4. Add observability (structured logs, metrics, tracing, alerting).
+5. Add CI/CD pipeline and staging environment gates.
