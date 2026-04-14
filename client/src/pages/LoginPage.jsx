@@ -22,7 +22,8 @@ const LoginPage = () => {
       login(data.data);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Login failed');
+      const details = err.details?.map((e) => e.message).join(', ');
+      setError(details || err.message || 'Login failed');
     }
   };
 

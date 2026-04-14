@@ -17,7 +17,14 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error?.response?.data?.message || 'Unexpected API error';
-    return Promise.reject(new Error(message));
+    const payload = error?.response?.data;
+    const firstValidationError = payload?.errors?.[0]?.message;
+    const message = payload?.message || firstValidationError || 'Unexpected API error';
+
+    const normalizedError = new Error(message);
+    normalizedError.status = error?.response?.status || 500;
+    normalizedError.details = payload?.errors || [];
+
+    return Promise.reject(normalizedError);
   }
 );

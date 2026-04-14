@@ -125,3 +125,18 @@ It means MongoDB is not running in your Codespace container. Fix by:
    ```
 
 Optional: run local MongoDB inside container only if you explicitly install/start it.
+
+If you see:
+`querySrv EBADNAME _mongodb._tcp.<cluster>`
+
+Your Atlas URI still contains placeholders like `<cluster>`, `<user>`, or `<password>`. Replace them with real values (without angle brackets).
+
+If you see:
+`querySrv ENOTFOUND _mongodb._tcp.cluster0.xxxxx.mongodb.net`
+
+Your host is still the sample Atlas hostname. Replace it with your **actual** cluster hostname from Atlas (e.g. `cluster0.ab12c.mongodb.net`).
+Also verify in Atlas:
+- Database user exists
+- Network Access allows your current IP (or `0.0.0.0/0` temporarily for dev)
+
+

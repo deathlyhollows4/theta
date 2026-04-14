@@ -22,7 +22,8 @@ const RegisterPage = () => {
       login(data.data);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Registration failed');
+      const details = err.details?.map((e) => e.message).join(', ');
+      setError(details || err.message || 'Registration failed');
     }
   };
 
