@@ -33,6 +33,16 @@ npm run seed:problems  # seeds ~360 problems
 npm run dev
 ```
 
+### Running from current directory
+If your prompt already shows `/workspaces/theta/server`, do **not** run `cd server` again. Use:
+```bash
+npm install
+cp .env.example .env
+npm run seed:problems
+npm run dev
+```
+
+
 ## Run frontend
 ```bash
 cd client
@@ -99,3 +109,19 @@ VITE_API_BASE_URL=http://localhost:5000/api
 3. Move code execution to isolated worker/container service.
 4. Add observability (structured logs, metrics, tracing, alerting).
 5. Add CI/CD pipeline and staging environment gates.
+
+## Codespaces troubleshooting
+If you see:
+`connect ECONNREFUSED ::1:27017` or `127.0.0.1:27017`
+
+It means MongoDB is not running in your Codespace container. Fix by:
+1. Create a MongoDB Atlas cluster.
+2. Put Atlas connection string in `server/.env` as `MONGODB_URI=...`.
+3. Re-run:
+   ```bash
+   cd server
+   npm run seed:problems
+   npm run dev
+   ```
+
+Optional: run local MongoDB inside container only if you explicitly install/start it.

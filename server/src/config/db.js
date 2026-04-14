@@ -6,9 +6,15 @@ export const connectDB = async () => {
     throw new Error('MONGODB_URI is required to start the server.');
   }
 
-  await mongoose.connect(env.MONGODB_URI, {
-    dbName: 'ai_dsa_copilot'
-  });
+  try {
+    await mongoose.connect(env.MONGODB_URI, {
+      dbName: 'ai_dsa_copilot'
+    });
 
-  console.info('[DB] MongoDB connected successfully');
+    console.info('[DB] MongoDB connected successfully');
+  } catch (error) {
+    const hint =
+      'MongoDB connection failed. In Codespaces, use a cloud MongoDB URI (Atlas) in server/.env instead of localhost unless MongoDB is running in the container.';
+    throw new Error(`${error.message}. ${hint}`);
+  }
 };
