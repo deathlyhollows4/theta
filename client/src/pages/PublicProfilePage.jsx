@@ -5,12 +5,34 @@ import { api } from '../services/api.js';
 const PublicProfilePage = () => {
   const { username } = useParams();
   const [profile, setProfile] = useState(null);
+  const [error, setError] = useState('');
+
+  const loadProfile = async () => {
+    try {
+      setError('');
+      const response = await api.get(`/profile/${username}`);
+      setProfile(response.data.data);
+    } catch (err) {
+      setError(err.message || 'Failed to load public profile.');
+    }
+  };
 
   useEffect(() => {
-    api.get(`/profile/${username}`).then((response) => setProfile(response.data.data));
+    loadProfile();
   }, [username]);
 
-  if (!profile) return <div className="p-6">Loading profile...</div>;
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="mb-3 rounded border border-rose-500/50 bg-rose-900/20 p-3 text-rose-200">{error}</div>
+        <button onClick={loadProfile} className="rounded bg-cyan-600 px-4 py-2 hover:bg-cyan-500">
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!profile) return <div className="p-6 animate-pulse text-slate-400">Loading profile...</div>;
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">

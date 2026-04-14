@@ -7,14 +7,36 @@ import { api } from '../services/api.js';
 const DashboardPage = () => {
   const [dashboard, setDashboard] = useState(null);
   const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
+
+  const load = async () => {
+    try {
+      setError('');
+      const [dashboardRes, meRes] = await Promise.all([api.get('/dashboard'), api.get('/auth/me')]);
+      setDashboard(dashboardRes.data.data);
+      setUsername(meRes.data.data.username);
+    } catch (err) {
+      setError(err.message || 'Failed to load dashboard.');
+    }
+  };
 
   useEffect(() => {
-    api.get('/dashboard').then((response) => setDashboard(response.data.data));
-    api.get('/auth/me').then((response) => setUsername(response.data.data.username));
+    load();
   }, []);
 
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="mb-3 rounded border border-rose-500/50 bg-rose-900/20 p-3 text-rose-200">{error}</div>
+        <button onClick={load} className="rounded bg-cyan-600 px-4 py-2 hover:bg-cyan-500">
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   if (!dashboard) {
-    return <div className="p-6">Loading dashboard...</div>;
+    return <div className="p-6 animate-pulse text-slate-400">Loading dashboard analytics...</div>;
   }
 
   return (

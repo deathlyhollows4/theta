@@ -16,6 +16,13 @@ Production-grade MVP scaffold for a coding practice platform with AI-driven DSA 
 - Step 11: Custom input runner + editor keyboard shortcuts (Cmd/Ctrl run/submit).
 - Step 12: Scaled problem seeding to 360 variants + Problem Bank page with filters/pagination.
 - Step 13: Public shareable profile endpoint + frontend public profile page.
+- Step 14: Production hardening with rate limiting and frontend error boundary.
+- Step 15: Health diagnostics endpoint + frontend retry/skeleton states.
+- Step 16: Auth/session UX hardening (auth context, protected routes, logout).
+- Step 17: UI consistency pass (empty states, retry flows, loading states).
+- Step 18: Notification + accessibility polish (toast feedback, ARIA labels).
+- Step 19: Release readiness docs cleanup + dynamic service version in health readiness.
+- Step 20: Final validation pass (fixed keyboard listener stability and callback consistency).
 
 ## Run backend
 ```bash
@@ -41,6 +48,7 @@ VITE_API_BASE_URL=http://localhost:5000/api
 
 ## API endpoints (current)
 - `GET /api/health`
+- `GET /api/health/ready` (uptime/version readiness metadata)
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `GET /api/auth/me` (Bearer token required)
@@ -60,5 +68,34 @@ VITE_API_BASE_URL=http://localhost:5000/api
 3. Open forwarded ports for `5173` (client) and `5000` (server).
 
 ## Deployment notes
-- Frontend: Vercel (set `VITE_API_BASE_URL` to backend URL).
-- Backend: Render/Railway (set env vars from `server/.env.example`).
+### Frontend (Vercel)
+- Root directory: `client`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Env: `VITE_API_BASE_URL=<deployed_backend_url>/api`
+
+### Backend (Render/Railway)
+- Root directory: `server`
+- Build command: `npm install`
+- Start command: `npm run start`
+- Required env vars: all keys from `server/.env.example`
+
+## Release readiness checklist
+- [ ] Run backend and frontend locally without env warnings.
+- [ ] Seed problem bank (`npm run seed:problems`) and verify list pagination.
+- [ ] Verify register/login/logout and protected routes.
+- [ ] Verify run, run-custom, submit, dashboard, roadmap, public profile.
+- [ ] Add production MongoDB URI and OpenAI key in deployment env.
+
+## Known limitations (current MVP)
+- JavaScript is the only executable language right now (Python/C++ UI placeholders are non-functional).
+- In-memory rate limiting is single-instance only (not distributed).
+- Execution sandbox uses Node `vm`; for strict production isolation, move to containerized runners.
+- AI output quality depends on OpenAI availability and prompt constraints.
+
+## Suggested next priorities
+1. Add robust automated test suites (unit + integration + E2E).
+2. Replace in-memory rate limiting with Redis-backed limiter.
+3. Move code execution to isolated worker/container service.
+4. Add observability (structured logs, metrics, tracing, alerting).
+5. Add CI/CD pipeline and staging environment gates.
