@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { api } from '../services/api.js';
+import ToastMessage from '../components/ToastMessage.jsx';
 
 const languageOptions = [
   { value: 'javascript', label: 'JavaScript', enabled: true },
@@ -20,6 +21,7 @@ const ProblemPage = () => {
   const [history, setHistory] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState(null);
 
   const accuracyLabel = useMemo(() => {
     if (!result) return '';
@@ -55,6 +57,7 @@ const ProblemPage = () => {
     try {
       const { data } = await api.post('/submit/run', { problemSlug: slug, code, language });
       setResult(data.data);
+      setNotice({ type: 'success', text: 'Code executed on official test cases.' });
     } catch (err) {
       setError(err?.message || 'Run failed.');
     } finally {
@@ -68,6 +71,7 @@ const ProblemPage = () => {
     try {
       const { data } = await api.post('/submit/run-custom', { code, customInput, language });
       setCustomOutput(data.data);
+      setNotice({ type: 'success', text: 'Custom test executed.' });
     } catch (err) {
       setError(err?.message || 'Custom run failed.');
     } finally {
@@ -82,6 +86,7 @@ const ProblemPage = () => {
       const { data } = await api.post('/submit', { problemSlug: slug, code, language });
       setResult(data.data);
       loadHistory();
+      setNotice({ type: 'success', text: 'Submission saved with AI feedback.' });
     } catch (err) {
       setError(err?.message || 'Submit failed.');
     } finally {
@@ -111,7 +116,9 @@ const ProblemPage = () => {
         {error ? (
           <>
             <div className="mb-3 rounded border border-rose-500/50 bg-rose-900/20 p-3 text-rose-200">{error}</div>
-            <button onClick={loadAll} className="rounded bg-cyan-600 px-4 py-2 hover:bg-cyan-500">Retry</button>
+            <button onClick={loadAll} className="rounded bg-cyan-600 px-4 py-2 hover:bg-cyan-500">
+              Retry
+            </button>
           </>
         ) : (
           <div className="animate-pulse text-slate-400">Loading problem...</div>
@@ -134,9 +141,7 @@ const ProblemPage = () => {
                 <p>
                   {item.status.toUpperCase()} · {item.passedCount}/{item.totalCount} · {item.executionMs}ms
                 </p>
-                <p className="text-slate-400">
-                  {new Date(item.createdAt).toLocaleString()} · {item.mistakeAnalysis?.primaryCategory || 'n/a'}
-                </p>
+                <p className="text-slate-400">{new Date(item.createdAt).toLocaleString()} · {item.mistakeAnalysis?.primaryCategory || 'n/a'}</p>
               </div>
             ))}
             {!history.length && <p className="text-slate-400">No submissions yet.</p>}
@@ -145,12 +150,10 @@ const ProblemPage = () => {
       </section>
 
       <section className="space-y-3 rounded-lg border border-slate-800 bg-slate-900 p-4 lg:col-span-3">
+        {notice && <ToastMessage type={notice.type} message={notice.text} onClose={() => setNotice(null)} />}
+
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2"
-          >
+          <select aria-label="Language selector" value={language} onChange={(e) => setLanguage(e.target.value)} className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2">
             {languageOptions.map((opt) => (
               <option key={opt.value} value={opt.value} disabled={!opt.enabled}>
                 {opt.label}
@@ -158,10 +161,10 @@ const ProblemPage = () => {
             ))}
           </select>
           <div className="space-x-2">
-            <button onClick={runCode} disabled={isRunning} className="rounded-md bg-slate-700 px-3 py-2 hover:bg-slate-600 disabled:opacity-60">
+            <button aria-label="Run official tests" onClick={runCode} disabled={isRunning} className="rounded-md bg-slate-700 px-3 py-2 hover:bg-slate-600 disabled:opacity-60">
               {isRunning ? 'Running...' : 'Run Code'}
             </button>
-            <button onClick={submitCode} disabled={isRunning} className="rounded-md bg-cyan-600 px-3 py-2 hover:bg-cyan-500 disabled:opacity-60">
+            <button aria-label="Submit solution" onClick={submitCode} disabled={isRunning} className="rounded-md bg-cyan-600 px-3 py-2 hover:bg-cyan-500 disabled:opacity-60">
               Submit
             </button>
           </div>
@@ -177,12 +180,13 @@ const ProblemPage = () => {
           <p className="mb-2 font-medium text-cyan-300">Custom Input Runner (JSON array arguments)</p>
           <div className="flex gap-2">
             <input
+              aria-label="Custom input JSON"
               value={customInput}
               onChange={(e) => setCustomInput(e.target.value)}
               className="w-full rounded border border-slate-700 bg-slate-900 px-2 py-1"
               placeholder='Example: [[2,7,11,15],9]'
             />
-            <button onClick={runCustom} disabled={isRunning} className="rounded bg-indigo-600 px-3 py-1 hover:bg-indigo-500 disabled:opacity-60">
+            <button aria-label="Run custom input" onClick={runCustom} disabled={isRunning} className="rounded bg-indigo-600 px-3 py-1 hover:bg-indigo-500 disabled:opacity-60">
               Run Custom
             </button>
           </div>
